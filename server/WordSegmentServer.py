@@ -14,6 +14,9 @@ from thrift.server import TServer
 
 import loggingUtils
 
+from segmentation import *
+from posTag import *
+
 logger = loggingUtils.my_logging.get_my_log("./logs/WordSegmentServer.log", 'WordSegmentServer')
 
 class WordSegmentServiceHandler:
@@ -26,10 +29,8 @@ class WordSegmentServiceHandler:
     def segmentText(self, input):
         try:
             logger.info("segmentText:" + input)
-            result = []
-            result.append("Segment")
-            result.append("Text")
-            result.append(input)
+            segment_method = segmentation()
+            result = segment_method.generate_char_result(input)
             return result
         except Exception as e:
             logger.error('%s' % e.message)
@@ -38,11 +39,13 @@ class WordSegmentServiceHandler:
         try:
             logger.info("segmentWithPosTagging:" + str(words))
             result = []
-            count = 1
+            postag_method = posTag()
+            postag_result = postag_method.posTagging_text(words)
+            count = 0
             for word in words:
-                posResult = PosResult(word, "Tag" + str(count))
-                count += 1
+                posResult = PosResult(word, postag_result[count])
                 result.append(posResult)
+                count += 1
             return result
         except Exception as e:
             logger.error('%s' % e.message)
@@ -51,10 +54,15 @@ class WordSegmentServiceHandler:
         try:
             logger.info("segmentWithPosTagging:" + input)
             result = []
-            posResult = PosResult("segmentWithPosTagging", "Tag1")
-            result.append(posResult)
-            posResult = PosResult(input, "Tag2")
-            result.append(posResult)
+            segment_method = segmentation()
+            postag_method = posTag()
+            segment_result = segment_method.generate_char_result(input)
+            postag_result = postag_method.posTagging_text(segment_result)
+            count = 0
+            for word in segment_result:
+                posResult = PosResult(word, postag_result[count])
+                result.append(posResult)
+                count += 1
             return result
         except Exception as e:
             logger.error('%s' % e.message)
