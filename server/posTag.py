@@ -11,17 +11,11 @@ from generate_file_pos import *
 from PosTagModel import *
 
 class posTag:
-    def __init__(self):
-        self.char_vec_path = "./PosTagModel/char_vec.txt"
-        self.word_vec_path = "./PosTagModel/word_vec.txt"
-        self.parameters_path = "./PosTagModel/parameters.txt"
-        self.crf_transition_matrix_path = './PosTagModel/crf_transition_matrix.txt'
-        self.tag_path = "./PosTagModel/tag.csv"
-
-        self.char_vec_dict = generate_dict(self.char_vec_path)
-        self.word_vec_dict = generate_dict(self.word_vec_path)
-        self.parameter_dict = read_parameter(self.parameters_path)
-        self.tag_dict = generate_Tag_dict(self.tag_path)
+    def __init__(self, char_vec_path, word_vec_path, parameters_path, crf_transition_matrix_path, tag_path, model_path):
+        self.char_vec_dict = generate_dict(char_vec_path)
+        self.word_vec_dict = generate_dict(word_vec_path)
+        self.parameter_dict = read_parameter(parameters_path)
+        self.tag_dict = generate_Tag_dict(tag_path)
 
         # Load the initial parameters
         distinctTagNum = self.parameter_dict["distinctTagNum"]
@@ -34,14 +28,14 @@ class posTag:
         self.batch_size = self.parameter_dict["batch_size"]
 
         # Load the CRF transition matrix
-        self.crf_transition_matrix = np.loadtxt(self.crf_transition_matrix_path)
+        self.crf_transition_matrix = np.loadtxt(crf_transition_matrix_path)
 
         # Load the BI-LSTM + CRF model
-        self.model = PosTagModel(distinctTagNum, self.word_vec_path, self.char_vec_path, num_hidden, embedding_word_size, 
+        self.model = PosTagModel(distinctTagNum, word_vec_path, char_vec_path, num_hidden, embedding_word_size, 
                                  embedding_char_size, self.max_sentence_len, self.max_chars_per_word, char_window_size)
         sv = tf.train.Saver()
         self.sess = tf.Session()
-        sv.restore(self.sess, './PosTagModel/PosTagModel')
+        sv.restore(self.sess, model_path)
         self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
 
     # Define the function to get the index of the character in the c2v
@@ -58,13 +52,12 @@ class posTag:
         word = word.decode("utf-8")
 
         for char in word:
-            if char != " ":
-                if char.encode("utf-8") in self.char_vec_dict:
-                    char_list[0][index] = self.getCharIndex(char.encode("utf-8"))
-                    index += 1
-                else:
-                    char_list[0][index] = self.getCharIndex("<UNK>")
-                    index += 1
+            if char.encode("utf-8") in self.char_vec_dict:
+                char_list[0][index] = self.getCharIndex(char.encode("utf-8"))
+                index += 1
+            else:
+                char_list[0][index] = self.getCharIndex("<UNK>")
+                index += 1
 
         return char_list
 
@@ -80,17 +73,16 @@ class posTag:
             text = text[:max_sentence_len]
 
         for word in text:
-            if word != " ":
-                if word in self.word_vec_dict:
-                    word_list[0][word_index] = self.getWordIndex(word)
-                    char_list = self.generate_char_array(word, char_index, char_list)
-                    word_index += 1
-                    char_index = self.max_chars_per_word * word_index
-                else:
-                    word_list[0][word_index] = self.getWordIndex("<UNK>")
-                    char_list = self.generate_char_array(word, char_index, char_list)
-                    word_index += 1
-                    char_index = self.max_chars_per_word * word_index
+            if word in self.word_vec_dict:
+                word_list[0][word_index] = self.getWordIndex(word)
+                char_list = self.generate_char_array(word, char_index, char_list)
+                word_index += 1
+                char_index = self.max_chars_per_word * word_index
+            else:
+                word_list[0][word_index] = 1
+                char_list = self.generate_char_array(word, char_index, char_list)
+                word_index += 1
+                char_index = self.max_chars_per_word * word_index
 
         return word_list, char_list, np.zeros([1, self.max_sentence_len], dtype = int)
 

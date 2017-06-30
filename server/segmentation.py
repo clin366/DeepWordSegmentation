@@ -11,13 +11,9 @@ from generate_file_segment import *
 from SegmentModel import *
 
 class segmentation:
-    def __init__(self):
-        self.vec_path = "./SegmentModel/vec.txt"
-        self.parameters_path = "./SegmentModel/parameters.txt"
-        self.crf_transition_matrix_path = "./SegmentModel/crf_transition_matrix.txt"
-
-        self.vec_dict = generate_vec_dict(self.vec_path)
-        self.parameter_dict = read_parameter(self.parameters_path)
+    def __init__(self, vec_path, parameters_path, crf_transition_matrix_path, model_path):
+        self.vec_dict = generate_vec_dict(vec_path)
+        self.parameter_dict = read_parameter(parameters_path)
 
         # Load the initial parameters
         self.max_sentence_len = self.parameter_dict["max_sentence_len"]
@@ -26,13 +22,13 @@ class segmentation:
         num_hidden = self.parameter_dict["num_hidden"]
 
         # Load the CRF transition matrix
-        self.crf_transition_matrix = np.loadtxt(self.crf_transition_matrix_path)
+        self.crf_transition_matrix = np.loadtxt(crf_transition_matrix_path)
 
         # Load the BI-LSTM + CRF model
-        self.model = SegmentModel(embedding_size, num_tags, self.vec_path, num_hidden, self.max_sentence_len)
+        self.model = SegmentModel(embedding_size, num_tags, vec_path, num_hidden, self.max_sentence_len)
         sv = tf.train.Saver()
         self.sess = tf.Session()
-        sv.restore(self.sess, './SegmentModel/SegmentModel')
+        sv.restore(self.sess, model_path)
         self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
 
     # Define the function to get the indxe of the character in the w2v
