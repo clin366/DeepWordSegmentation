@@ -30,13 +30,15 @@ class posTag:
         # Load the CRF transition matrix
         self.crf_transition_matrix = np.loadtxt(crf_transition_matrix_path)
 
-        # Load the BI-LSTM + CRF model
-        self.model = PosTagModel(distinctTagNum, word_vec_path, char_vec_path, num_hidden, embedding_word_size, 
-                                 embedding_char_size, self.max_sentence_len, self.max_chars_per_word, char_window_size)
-        sv = tf.train.Saver()
-        self.sess = tf.Session()
-        sv.restore(self.sess, model_path)
-        self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
+        self.graph = tf.Graph()
+		# Load the BI-LSTM + CRF model
+        with self.graph.as_default():
+			self.model = PosTagModel(distinctTagNum, word_vec_path, char_vec_path, num_hidden, embedding_word_size, 
+									 embedding_char_size, self.max_sentence_len, self.max_chars_per_word, char_window_size)
+			sv = tf.train.Saver()
+			self.sess = tf.Session()
+			sv.restore(self.sess, model_path)
+			self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
 
     # Define the function to get the index of the character in the c2v
     def getCharIndex(self, char):
@@ -84,12 +86,13 @@ class posTag:
                 word_index += 1
                 char_index = self.max_chars_per_word * word_index
 
-        return word_list, char_list, np.zeros([1, self.max_sentence_len], dtype = int)
+        return word_list, char_list
 
     # Define the function to do the posTagging work, return the tag sequence
     def posTagging_text(self, text):
-        twX, tcX, tY = self.generate_text_array(text)
-        result = generate_result(self.sess, self.batch_size, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp_w, self.model.inp_c, twX, tcX, tY)
+        twX, tcX = self.generate_text_array(text)
+		with self.graph.as_default():
+			result = generate_result(self.sess, self.batch_size, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp_w, self.model.inp_c, twX, tcX)
         
         for i in range(len(result)):
             result[i] = self.tag_dict[result[i]]

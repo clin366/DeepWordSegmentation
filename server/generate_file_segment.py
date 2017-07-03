@@ -86,32 +86,15 @@ def generate_result_without_symbol(sequence, text):
     return new_sequence
 
 # Define the function to do the segmentation work
-def generate_result(sess, unary_score, test_sequence_length, transMatrix, inp, tX, tY):
-    
-    totalEqual = 0
-    batchSize = 100
-    totalLen = tX.shape[0]
-    numBatch = int((tX.shape[0] - 1)/batchSize) + 1
-    
-    for i in range(numBatch):
+def generate_result(sess, unary_score, test_sequence_length, transMatrix, inp, tX):
+
+    feed_dict = {inp: tX[0:1]}
+    unary_score_val, test_sequence_length_val = sess.run([unary_score, test_sequence_length], feed_dict)
+          
+    for tf_unary_scores_, sequence_length_ in zip(unary_score_val, test_sequence_length_val):
+        tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
         
-        endOff = (i + 1) * batchSize
-        
-        if endOff > totalLen:
-            endOff = totalLen
-        
-        y = tY[i * batchSize:endOff]
-        feed_dict = {inp: tX[i * batchSize:endOff]}
-        
-        unary_score_val, test_sequence_length_val = sess.run([unary_score, test_sequence_length], feed_dict)
-                
-        for tf_unary_scores_, y_, sequence_length_ in zip(
-                unary_score_val, y, test_sequence_length_val):
-            # print("seg len:%d" % (sequence_length_))
-            tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
-            y_ = y_[:sequence_length_]
-            
-            # viterbi decode
-            viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
+        # viterbi decode
+        viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
 
     return viterbi_sequence

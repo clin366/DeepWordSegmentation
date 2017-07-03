@@ -24,12 +24,14 @@ class segmentation:
         # Load the CRF transition matrix
         self.crf_transition_matrix = np.loadtxt(crf_transition_matrix_path)
 
-        # Load the BI-LSTM + CRF model
-        self.model = SegmentModel(embedding_size, num_tags, vec_path, num_hidden, self.max_sentence_len)
-        sv = tf.train.Saver()
-        self.sess = tf.Session()
-        sv.restore(self.sess, model_path)
-        self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
+        self.graph = tf.Graph()
+		# Load the BI-LSTM + CRF model
+		with self.graph.as_default():
+			self.model = SegmentModel(embedding_size, num_tags, vec_path, num_hidden, self.max_sentence_len)
+			sv = tf.train.Saver()
+			self.sess = tf.Session()
+			sv.restore(self.sess, model_path)
+			self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
 
     # Define the function to get the indxe of the character in the w2v
     def getIndex(self, char):
@@ -50,12 +52,14 @@ class segmentation:
                     char_list[0][count] = self.getIndex("<UNK>")
                     count += 1
 
-        return char_list, np.zeros([1, self.max_sentence_len], dtype = int)
+        return char_list
 
     # Define the function to do the segmentation work, return tag sequence with symbol
     def segment_text_without_filter(self, text):
-        tX, tY = self.generate_text_array(text)
-        result = generate_result(self.sess, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp, tX, tY)
+        tX = self.generate_text_array(text)
+		
+		with self.graph.as_default():
+			result = generate_result(self.sess, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp, tX)
         
         return result
 
