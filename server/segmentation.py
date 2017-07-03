@@ -25,13 +25,13 @@ class segmentation:
         self.crf_transition_matrix = np.loadtxt(crf_transition_matrix_path)
 
         self.graph = tf.Graph()
-		# Load the BI-LSTM + CRF model
-		with self.graph.as_default():
-			self.model = SegmentModel(embedding_size, num_tags, vec_path, num_hidden, self.max_sentence_len)
-			sv = tf.train.Saver()
-			self.sess = tf.Session()
-			sv.restore(self.sess, model_path)
-			self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
+        # Load the BI-LSTM + CRF model
+        with self.graph.as_default():
+            self.model = SegmentModel(embedding_size, num_tags, vec_path, num_hidden, self.max_sentence_len)
+            sv = tf.train.Saver()
+            self.sess = tf.Session();
+            sv.restore(self.sess, model_path)
+            self.text_unary_score, self.text_sequence_length = self.model.test_unary_score()
 
     # Define the function to get the indxe of the character in the w2v
     def getIndex(self, char):
@@ -39,42 +39,45 @@ class segmentation:
 
     # Define the function to generate the text array
     def generate_text_array(self, text):
-        text = text.decode("utf-8")
-        char_list = np.zeros([1, self.max_sentence_len], dtype = int)
-        count = 0
 
-        for char in text:
-            if char != " ":
-                if char.encode('utf-8') in self.vec_dict:
-                    char_list[0][count] = self.getIndex(char.encode('utf-8'))
-                    count += 1
-                else:
-                    char_list[0][count] = self.getIndex("<UNK>")
-                    count += 1
+        num_text = len(text)
+        char_list = np.zeros([num_text, self.max_sentence_len], dtype = int)
+
+        for i in range(len(text)):
+            text[i] = text[i].replace(" ","")
+            temp_text = text[i].decode("utf-8")
+            if len(temp_text) > 80:
+                temp_text = temp_text[:80]
+            count = 0
+            for char in temp_text:
+                if char != " ":
+                    if char.encode('utf-8') in self.vec_dict:
+                        char_list[i][count] = self.getIndex(char.encode('utf-8'))
+                        count += 1
+                    else:
+                        char_list[i][count] = self.getIndex("<UNK>")
+                        count += 1
 
         return char_list
 
     # Define the function to do the segmentation work, return tag sequence with symbol
     def segment_text_without_filter(self, text):
         tX = self.generate_text_array(text)
-		
-		with self.graph.as_default():
-			result = generate_result(self.sess, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp, tX)
-        
+
+        with self.graph.as_default():
+            result = generate_result(self.sess, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp, tX)
+                    
         return result
 
-    # Define the function to do the segmentation word, return tag sequence without symbol
-    def segment_text(self, text):
-        result = self.segment_text_without_filter(text)
-        return generate_result_without_symbol(result, text)
-
     # Define the function to return the char result
-    def generate_char_result(self, text):
-        text = text.replace(" ","")
-        result = self.segment_text_without_filter(text)
+    def generate_char_result(self, text, result):
+
         text = text.decode("utf-8")
         char_result = []
 
+        if len(text) > 80:
+            text = text[:80]
+            
         assert len(text) == len(result)
 
         for i in range(len(result)):
@@ -84,11 +87,33 @@ class segmentation:
                 char = ""
                 char += text[i].encode('utf-8')
             elif result[i] == 2:
-                char += text[i].encode('utf-8')
+                try:
+                    char += text[i].encode('utf-8')
+                except:
+                    char = ""
+                    char += text[i].encode('utf-8')
             else:
-                char += text[i].encode('utf-8')
-                char_result.append(char)
-
+                try:
+                    char += text[i].encode('utf-8')
+                    char_result.append(char)
+                except:
+                    char = ""
+                    char += text[i].encode('utf-8')
+                    char_result.append(char)
+                    
         char_result = filter_symbol(char_result)
 
-        return str(char_result).decode('string_escape')
+        return char_result
+
+    def generate_final_result(self, text):
+        if type(text) == str:
+            text = [text]
+
+        result = self.segment_text_without_filter(text)
+        num_text = len(result)
+        final_result = []
+
+        for i in range(num_text):
+            final_result.append(self.generate_char_result(text[i], result[i]))
+
+        return final_result

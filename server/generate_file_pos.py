@@ -65,13 +65,22 @@ def read_parameter(path):
     parameter_file.close()
     return parameter
 
-# Define the function to do the posTagging work
 def generate_result(sess, batchSize, unary_score, test_sequence_length, transMatrix, inp_w, inp_c, twX, tcX):
-  
-    feed_dict = {inp_w: twX[0:1],inp_c: tcX[0:1]}
-    unary_score_val, test_sequence_length_val = sess.run([unary_score, test_sequence_length], feed_dict)
-    for tf_unary_scores_, sequence_length_ in zip(unary_score_val, test_sequence_length_val):
-        tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
-        viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
+    
+    totalLen = twX.shape[0]
+    numBatch = int((twX.shape[0] - 1) / batchSize) + 1
+    result = []
 
-    return viterbi_sequence
+    for i in range(numBatch):
+        endOff = (i + 1) * batchSize
+        if endOff > totalLen:
+            endOff = totalLen
+        feed_dict = {inp_w: twX[i * batchSize:endOff], inp_c: tcX[i * batchSize:endOff]}
+        unary_score_val, test_sequence_length_val = sess.run([unary_score, test_sequence_length], feed_dict)
+
+        for tf_unary_scores_, sequence_length_ in zip(unary_score_val, test_sequence_length_val):
+            tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
+            viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
+            result.append(viterbi_sequence)
+
+    return result
