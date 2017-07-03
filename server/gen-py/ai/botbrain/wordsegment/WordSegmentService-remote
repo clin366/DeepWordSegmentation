@@ -26,8 +26,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('Functions:')
     print('  bool alive()')
     print('   segmentText(string input)')
+    print('   segmentTexts( inputs)')
     print('   posTagging( words)')
+    print('   posTaggings( wordsList)')
     print('   segmentWithPosTagging(string input)')
+    print('   segmentWithPosTaggings( inputs)')
     print('')
     sys.exit(0)
 
@@ -119,17 +122,35 @@ elif cmd == 'segmentText':
         sys.exit(1)
     pp.pprint(client.segmentText(args[0],))
 
+elif cmd == 'segmentTexts':
+    if len(args) != 1:
+        print('segmentTexts requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.segmentTexts(eval(args[0]),))
+
 elif cmd == 'posTagging':
     if len(args) != 1:
         print('posTagging requires 1 args')
         sys.exit(1)
     pp.pprint(client.posTagging(eval(args[0]),))
 
+elif cmd == 'posTaggings':
+    if len(args) != 1:
+        print('posTaggings requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.posTaggings(eval(args[0]),))
+
 elif cmd == 'segmentWithPosTagging':
     if len(args) != 1:
         print('segmentWithPosTagging requires 1 args')
         sys.exit(1)
     pp.pprint(client.segmentWithPosTagging(args[0],))
+
+elif cmd == 'segmentWithPosTaggings':
+    if len(args) != 1:
+        print('segmentWithPosTaggings requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.segmentWithPosTaggings(eval(args[0]),))
 
 else:
     print('Unrecognized method %s' % cmd)

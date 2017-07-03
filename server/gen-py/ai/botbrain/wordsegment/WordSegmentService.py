@@ -26,6 +26,13 @@ class Iface(object):
         """
         pass
 
+    def segmentTexts(self, inputs):
+        """
+        Parameters:
+         - inputs
+        """
+        pass
+
     def posTagging(self, words):
         """
         Parameters:
@@ -33,10 +40,24 @@ class Iface(object):
         """
         pass
 
+    def posTaggings(self, wordsList):
+        """
+        Parameters:
+         - wordsList
+        """
+        pass
+
     def segmentWithPosTagging(self, input):
         """
         Parameters:
          - input
+        """
+        pass
+
+    def segmentWithPosTaggings(self, inputs):
+        """
+        Parameters:
+         - inputs
         """
         pass
 
@@ -105,6 +126,37 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "segmentText failed: unknown result")
 
+    def segmentTexts(self, inputs):
+        """
+        Parameters:
+         - inputs
+        """
+        self.send_segmentTexts(inputs)
+        return self.recv_segmentTexts()
+
+    def send_segmentTexts(self, inputs):
+        self._oprot.writeMessageBegin('segmentTexts', TMessageType.CALL, self._seqid)
+        args = segmentTexts_args()
+        args.inputs = inputs
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_segmentTexts(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = segmentTexts_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "segmentTexts failed: unknown result")
+
     def posTagging(self, words):
         """
         Parameters:
@@ -135,6 +187,37 @@ class Client(Iface):
         if result.success is not None:
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "posTagging failed: unknown result")
+
+    def posTaggings(self, wordsList):
+        """
+        Parameters:
+         - wordsList
+        """
+        self.send_posTaggings(wordsList)
+        return self.recv_posTaggings()
+
+    def send_posTaggings(self, wordsList):
+        self._oprot.writeMessageBegin('posTaggings', TMessageType.CALL, self._seqid)
+        args = posTaggings_args()
+        args.wordsList = wordsList
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_posTaggings(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = posTaggings_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "posTaggings failed: unknown result")
 
     def segmentWithPosTagging(self, input):
         """
@@ -167,6 +250,37 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "segmentWithPosTagging failed: unknown result")
 
+    def segmentWithPosTaggings(self, inputs):
+        """
+        Parameters:
+         - inputs
+        """
+        self.send_segmentWithPosTaggings(inputs)
+        return self.recv_segmentWithPosTaggings()
+
+    def send_segmentWithPosTaggings(self, inputs):
+        self._oprot.writeMessageBegin('segmentWithPosTaggings', TMessageType.CALL, self._seqid)
+        args = segmentWithPosTaggings_args()
+        args.inputs = inputs
+        args.write(self._oprot)
+        self._oprot.writeMessageEnd()
+        self._oprot.trans.flush()
+
+    def recv_segmentWithPosTaggings(self):
+        iprot = self._iprot
+        (fname, mtype, rseqid) = iprot.readMessageBegin()
+        if mtype == TMessageType.EXCEPTION:
+            x = TApplicationException()
+            x.read(iprot)
+            iprot.readMessageEnd()
+            raise x
+        result = segmentWithPosTaggings_result()
+        result.read(iprot)
+        iprot.readMessageEnd()
+        if result.success is not None:
+            return result.success
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "segmentWithPosTaggings failed: unknown result")
+
 
 class Processor(Iface, TProcessor):
     def __init__(self, handler):
@@ -174,8 +288,11 @@ class Processor(Iface, TProcessor):
         self._processMap = {}
         self._processMap["alive"] = Processor.process_alive
         self._processMap["segmentText"] = Processor.process_segmentText
+        self._processMap["segmentTexts"] = Processor.process_segmentTexts
         self._processMap["posTagging"] = Processor.process_posTagging
+        self._processMap["posTaggings"] = Processor.process_posTaggings
         self._processMap["segmentWithPosTagging"] = Processor.process_segmentWithPosTagging
+        self._processMap["segmentWithPosTaggings"] = Processor.process_segmentWithPosTaggings
 
     def process(self, iprot, oprot):
         (name, type, seqid) = iprot.readMessageBegin()
@@ -230,6 +347,25 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
+    def process_segmentTexts(self, seqid, iprot, oprot):
+        args = segmentTexts_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = segmentTexts_result()
+        try:
+            result.success = self._handler.segmentTexts(args.inputs)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("segmentTexts", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
     def process_posTagging(self, seqid, iprot, oprot):
         args = posTagging_args()
         args.read(iprot)
@@ -249,6 +385,25 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
+    def process_posTaggings(self, seqid, iprot, oprot):
+        args = posTaggings_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = posTaggings_result()
+        try:
+            result.success = self._handler.posTaggings(args.wordsList)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("posTaggings", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
     def process_segmentWithPosTagging(self, seqid, iprot, oprot):
         args = segmentWithPosTagging_args()
         args.read(iprot)
@@ -264,6 +419,25 @@ class Processor(Iface, TProcessor):
             logging.exception(ex)
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("segmentWithPosTagging", msg_type, seqid)
+        result.write(oprot)
+        oprot.writeMessageEnd()
+        oprot.trans.flush()
+
+    def process_segmentWithPosTaggings(self, seqid, iprot, oprot):
+        args = segmentWithPosTaggings_args()
+        args.read(iprot)
+        iprot.readMessageEnd()
+        result = segmentWithPosTaggings_result()
+        try:
+            result.success = self._handler.segmentWithPosTaggings(args.inputs)
+            msg_type = TMessageType.REPLY
+        except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as ex:
+            msg_type = TMessageType.EXCEPTION
+            logging.exception(ex)
+            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+        oprot.writeMessageBegin("segmentWithPosTaggings", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -499,6 +673,149 @@ class segmentText_result(object):
         return not (self == other)
 
 
+class segmentTexts_args(object):
+    """
+    Attributes:
+     - inputs
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.LIST, 'inputs', (TType.STRING, 'UTF8', False), None, ),  # 1
+    )
+
+    def __init__(self, inputs=None,):
+        self.inputs = inputs
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.inputs = []
+                    (_etype10, _size7) = iprot.readListBegin()
+                    for _i11 in range(_size7):
+                        _elem12 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.inputs.append(_elem12)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('segmentTexts_args')
+        if self.inputs is not None:
+            oprot.writeFieldBegin('inputs', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRING, len(self.inputs))
+            for iter13 in self.inputs:
+                oprot.writeString(iter13.encode('utf-8') if sys.version_info[0] == 2 else iter13)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class segmentTexts_result(object):
+    """
+    Attributes:
+     - success
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.LIST, (TType.STRING, 'UTF8', False), False), None, ),  # 0
+    )
+
+    def __init__(self, success=None,):
+        self.success = success
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype17, _size14) = iprot.readListBegin()
+                    for _i18 in range(_size14):
+                        _elem19 = []
+                        (_etype23, _size20) = iprot.readListBegin()
+                        for _i24 in range(_size20):
+                            _elem25 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                            _elem19.append(_elem25)
+                        iprot.readListEnd()
+                        self.success.append(_elem19)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('segmentTexts_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.LIST, len(self.success))
+            for iter26 in self.success:
+                oprot.writeListBegin(TType.STRING, len(iter26))
+                for iter27 in iter26:
+                    oprot.writeString(iter27.encode('utf-8') if sys.version_info[0] == 2 else iter27)
+                oprot.writeListEnd()
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class posTagging_args(object):
     """
     Attributes:
@@ -525,10 +842,10 @@ class posTagging_args(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.words = []
-                    (_etype10, _size7) = iprot.readListBegin()
-                    for _i11 in range(_size7):
-                        _elem12 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
-                        self.words.append(_elem12)
+                    (_etype31, _size28) = iprot.readListBegin()
+                    for _i32 in range(_size28):
+                        _elem33 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.words.append(_elem33)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -545,8 +862,8 @@ class posTagging_args(object):
         if self.words is not None:
             oprot.writeFieldBegin('words', TType.LIST, 1)
             oprot.writeListBegin(TType.STRING, len(self.words))
-            for iter13 in self.words:
-                oprot.writeString(iter13.encode('utf-8') if sys.version_info[0] == 2 else iter13)
+            for iter34 in self.words:
+                oprot.writeString(iter34.encode('utf-8') if sys.version_info[0] == 2 else iter34)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -592,11 +909,11 @@ class posTagging_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype17, _size14) = iprot.readListBegin()
-                    for _i18 in range(_size14):
-                        _elem19 = PosResult()
-                        _elem19.read(iprot)
-                        self.success.append(_elem19)
+                    (_etype38, _size35) = iprot.readListBegin()
+                    for _i39 in range(_size35):
+                        _elem40 = PosResult()
+                        _elem40.read(iprot)
+                        self.success.append(_elem40)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -613,8 +930,160 @@ class posTagging_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter20 in self.success:
-                iter20.write(oprot)
+            for iter41 in self.success:
+                iter41.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class posTaggings_args(object):
+    """
+    Attributes:
+     - wordsList
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.LIST, 'wordsList', (TType.LIST, (TType.STRING, 'UTF8', False), False), None, ),  # 1
+    )
+
+    def __init__(self, wordsList=None,):
+        self.wordsList = wordsList
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.wordsList = []
+                    (_etype45, _size42) = iprot.readListBegin()
+                    for _i46 in range(_size42):
+                        _elem47 = []
+                        (_etype51, _size48) = iprot.readListBegin()
+                        for _i52 in range(_size48):
+                            _elem53 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                            _elem47.append(_elem53)
+                        iprot.readListEnd()
+                        self.wordsList.append(_elem47)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('posTaggings_args')
+        if self.wordsList is not None:
+            oprot.writeFieldBegin('wordsList', TType.LIST, 1)
+            oprot.writeListBegin(TType.LIST, len(self.wordsList))
+            for iter54 in self.wordsList:
+                oprot.writeListBegin(TType.STRING, len(iter54))
+                for iter55 in iter54:
+                    oprot.writeString(iter55.encode('utf-8') if sys.version_info[0] == 2 else iter55)
+                oprot.writeListEnd()
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class posTaggings_result(object):
+    """
+    Attributes:
+     - success
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.LIST, (TType.STRUCT, (PosResult, PosResult.thrift_spec), False), False), None, ),  # 0
+    )
+
+    def __init__(self, success=None,):
+        self.success = success
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype59, _size56) = iprot.readListBegin()
+                    for _i60 in range(_size56):
+                        _elem61 = []
+                        (_etype65, _size62) = iprot.readListBegin()
+                        for _i66 in range(_size62):
+                            _elem67 = PosResult()
+                            _elem67.read(iprot)
+                            _elem61.append(_elem67)
+                        iprot.readListEnd()
+                        self.success.append(_elem61)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('posTaggings_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.LIST, len(self.success))
+            for iter68 in self.success:
+                oprot.writeListBegin(TType.STRUCT, len(iter68))
+                for iter69 in iter68:
+                    iter69.write(oprot)
+                oprot.writeListEnd()
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
@@ -720,11 +1189,11 @@ class segmentWithPosTagging_result(object):
             if fid == 0:
                 if ftype == TType.LIST:
                     self.success = []
-                    (_etype24, _size21) = iprot.readListBegin()
-                    for _i25 in range(_size21):
-                        _elem26 = PosResult()
-                        _elem26.read(iprot)
-                        self.success.append(_elem26)
+                    (_etype73, _size70) = iprot.readListBegin()
+                    for _i74 in range(_size70):
+                        _elem75 = PosResult()
+                        _elem75.read(iprot)
+                        self.success.append(_elem75)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -741,8 +1210,152 @@ class segmentWithPosTagging_result(object):
         if self.success is not None:
             oprot.writeFieldBegin('success', TType.LIST, 0)
             oprot.writeListBegin(TType.STRUCT, len(self.success))
-            for iter27 in self.success:
-                iter27.write(oprot)
+            for iter76 in self.success:
+                iter76.write(oprot)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class segmentWithPosTaggings_args(object):
+    """
+    Attributes:
+     - inputs
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.LIST, 'inputs', (TType.STRING, 'UTF8', False), None, ),  # 1
+    )
+
+    def __init__(self, inputs=None,):
+        self.inputs = inputs
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.LIST:
+                    self.inputs = []
+                    (_etype80, _size77) = iprot.readListBegin()
+                    for _i81 in range(_size77):
+                        _elem82 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.inputs.append(_elem82)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('segmentWithPosTaggings_args')
+        if self.inputs is not None:
+            oprot.writeFieldBegin('inputs', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRING, len(self.inputs))
+            for iter83 in self.inputs:
+                oprot.writeString(iter83.encode('utf-8') if sys.version_info[0] == 2 else iter83)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class segmentWithPosTaggings_result(object):
+    """
+    Attributes:
+     - success
+    """
+
+    thrift_spec = (
+        (0, TType.LIST, 'success', (TType.LIST, (TType.STRUCT, (PosResult, PosResult.thrift_spec), False), False), None, ),  # 0
+    )
+
+    def __init__(self, success=None,):
+        self.success = success
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 0:
+                if ftype == TType.LIST:
+                    self.success = []
+                    (_etype87, _size84) = iprot.readListBegin()
+                    for _i88 in range(_size84):
+                        _elem89 = []
+                        (_etype93, _size90) = iprot.readListBegin()
+                        for _i94 in range(_size90):
+                            _elem95 = PosResult()
+                            _elem95.read(iprot)
+                            _elem89.append(_elem95)
+                        iprot.readListEnd()
+                        self.success.append(_elem89)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('segmentWithPosTaggings_result')
+        if self.success is not None:
+            oprot.writeFieldBegin('success', TType.LIST, 0)
+            oprot.writeListBegin(TType.LIST, len(self.success))
+            for iter96 in self.success:
+                oprot.writeListBegin(TType.STRUCT, len(iter96))
+                for iter97 in iter96:
+                    iter97.write(oprot)
+                oprot.writeListEnd()
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()

@@ -46,6 +46,10 @@ class WordSegmentServiceHandler:
         except Exception as e:
             logger.error('%s' % e.message)
 
+    def segmentTexts(self, inputs):
+        # inputs is a list of string
+        pass
+
     def posTagging(self, words):
         try:
             logger.info("segmentWithPosTagging:" + str(words))
@@ -59,6 +63,10 @@ class WordSegmentServiceHandler:
             return result
         except Exception as e:
             logger.error('%s' % e.message)
+
+    def posTaggings(self, wordsList):
+        # wordsList is a list of list of string
+        pass
 
     def segmentWithPosTagging(self, input):
         try:
@@ -74,6 +82,10 @@ class WordSegmentServiceHandler:
             return result
         except Exception as e:
             logger.error('%s' % e.message)
+
+    def segmentWithPosTaggings(self, inputs):
+        # inputs is a list of string
+        pass
 
 if __name__ == '__main__':
     handler = WordSegmentServiceHandler(segment_model_path=sys.argv[2], pos_tag_model_path=sys.argv[3])

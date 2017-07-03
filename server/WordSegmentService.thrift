@@ -9,6 +9,9 @@ struct PosResult {
 service WordSegmentService {
     bool alive(),
     list<string> segmentText(1:string input),
+    list<list<string>> segmentTexts(1:list<string> inputs),
     list<PosResult> posTagging(1:list<string> words),
-    list<PosResult> segmentWithPosTagging(1:string input)
+    list<list<PosResult>> posTaggings(1:list<list<string>> wordsList),
+    list<PosResult> segmentWithPosTagging(1:string input),
+    list<list<PosResult>> segmentWithPosTaggings(1:list<string> inputs)
 }
