@@ -118,7 +118,7 @@ class posTag:
                 temp.append(posResult)
             posTag_result.append(temp)
          
-         return posTag_result
+        return posTag_result
     # Define the function to do the posTagging work after segmentation, return the tag sequence
     def segment_posTagging_text(self, text):
         new_text = []
