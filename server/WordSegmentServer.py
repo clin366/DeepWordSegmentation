@@ -41,7 +41,7 @@ class WordSegmentServiceHandler:
     def segmentText(self, input):
         try:
             logger.info("segmentText:" + input)
-            result = self.segment_method.generate_final_result(input)
+            result = self.segment_method.generate_final_result_single_text(input.encode("utf-8"))
             return result[0]
         except Exception as e:
             logger.error('%s' % e.message)
@@ -75,8 +75,8 @@ class WordSegmentServiceHandler:
     def segmentWithPosTagging(self, input):
         try:
             logger.info("segmentWithPosTagging:" + input)
-            segment_result = self.segment_method.generate_final_result(input)
-            postag_result = self.postag_method.posTagging_text(segment_result)
+            segment_result = self.segment_method.generate_final_result_single_text(input.encode("utf-8"))
+            postag_result = self.postag_method.segment_posTagging_text(segment_result)
             return postag_result[0]
         except Exception as e:
             logger.error('%s' % e.message)
@@ -86,7 +86,7 @@ class WordSegmentServiceHandler:
         try:
             logger.info("segmentWithPosTagging error")
             segment_result = self.segment_method.generate_final_result(input)
-            postag_result = self.postag_method.posTagging_text(segment_result)
+            postag_result = self.postag_method.segment_posTagging_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)

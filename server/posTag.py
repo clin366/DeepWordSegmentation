@@ -50,8 +50,6 @@ class posTag:
     # Define the function to help generate the char array 
     def generate_char_array(self, word, index, char_list, text_index):
 
-        word = word.decode("utf-8")
-
         for char in word:
             if char.encode("utf-8") in self.char_vec_dict:
                 char_list[text_index][index] = self.getCharIndex(char.encode("utf-8"))
@@ -115,6 +113,38 @@ class posTag:
             count = 0
             temp = []
             for word in text[i]:
+                posResult = PosResult(word, result[i][count])
+                count += 1
+                temp.append(posResult)
+            posTag_result.append(temp)
+         
+         return posTag_result
+    # Define the function to do the posTagging work after segmentation, return the tag sequence
+    def segment_posTagging_text(self, text):
+        new_text = []
+        for i in range(len(text)):
+            temp = []
+            for j in range(len(text[i])):
+                temp.append(text[i][j].decode('utf-8))
+            new_text.append(temp)
+            
+        twX, tcX = self.generate_text_array(new_text)
+        
+        pos_result = generate_result(self.sess, self.batch_size, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp_w, self.model.inp_c, twX, tcX)
+        result = []
+        
+        for i in range(len(pos_result)):
+            temp = pos_result[i][:]
+            for j in range(len(temp)):
+                temp[j] = self.tag_dict[temp[j]]
+            result.append(temp)
+        
+        posTag_result = []
+        
+        for i in range(len(result)):
+            count = 0
+            temp = []
+            for word in new_text[i]:
                 posResult = PosResult(word, result[i][count])
                 count += 1
                 temp.append(posResult)

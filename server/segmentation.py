@@ -104,15 +104,26 @@ class segmentation:
 
         return char_result
 
-    def generate_final_result(self, text):
-        if type(text) == str:
-            text = [text]
-
+    def generate_final_result_single_text(self, text):
+        text = [text]
         result = self.segment_text_without_filter(text)
         num_text = len(result)
         final_result = []
 
         for i in range(num_text):
             final_result.append(self.generate_char_result(text[i], result[i]))
+
+        return final_result
+    def generate_final_result(self, text):
+        new_text = []
+        for i in range(len(text)):
+            new_text.append(text[i].encode("utf-8"))
+
+        result = self.segment_text_without_filter(new_text)
+        num_text = len(result)
+        final_result = []
+
+        for i in range(num_text):
+            final_result.append(self.generate_char_result(new_text[i], result[i]))
 
         return final_result
