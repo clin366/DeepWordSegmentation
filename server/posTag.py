@@ -125,7 +125,7 @@ class posTag:
         for i in range(len(text)):
             temp = []
             for j in range(len(text[i])):
-                temp.append(text[i][j].decode('utf-8))
+                temp.append(text[i][j].decode('utf-8'))
             new_text.append(temp)
             
         twX, tcX = self.generate_text_array(new_text)
@@ -150,4 +150,4 @@ class posTag:
                 temp.append(posResult)
             posTag_result.append(temp)
          
-         return posTag_result
+        return posTag_result
