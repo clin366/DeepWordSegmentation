@@ -9,6 +9,7 @@ import numpy as np
 import tensorflow as tf
 from generate_file_pos import *
 from PosTagModel import *
+from ai.botbrain.wordsegment.ttypes import PosResult
 
 class posTag:
     def __init__(self, char_vec_path, word_vec_path, parameters_path, crf_transition_matrix_path, tag_path, model_path):
@@ -107,5 +108,16 @@ class posTag:
             for j in range(len(temp)):
                 temp[j] = self.tag_dict[temp[j]]
             result.append(temp)
-
-        return result
+        
+        posTag_result = []
+        
+        for i in range(len(result)):
+            count = 0
+            temp = []
+            for word in text[i]:
+                posResult = PosResult(word, result[i][count])
+                count += 1
+                temp.append(posResult)
+            posTag_result.append(temp)
+         
+         return posTag_result
