@@ -41,23 +41,28 @@ class WordSegmentServiceHandler:
     def segmentText(self, input):
         try:
             logger.info("segmentText:" + input)
-            result = self.segment_method.generate_char_result(input)
-            return result
+            result = self.segment_method.generate_final_result(input)
+            return result[0]
         except Exception as e:
             logger.error('%s' % e.message)
 
     def segmentTexts(self, inputs):
         # inputs is a list of string
-        pass
+        try:
+            logger.info("segmentTexts:" + input)
+            result = self.segment_method.generate_final_result(inputs)
+            return result
+        except Exception as e:
+            logger.error('%s' % e.message)
 
     def posTagging(self, words):
         try:
-            logger.info("segmentWithPosTagging:" + str(words))
+            logger.info("posTagging:" + str(words))
             result = []
             postag_result = self.postag_method.posTagging_text(words)
             count = 0
             for word in words:
-                posResult = PosResult(word, postag_result[count])
+                posResult = PosResult(word, postag_result[0][count])
                 result.append(posResult)
                 count += 1
             return result
@@ -66,17 +71,31 @@ class WordSegmentServiceHandler:
 
     def posTaggings(self, wordsList):
         # wordsList is a list of list of string
-        pass
+        try:
+            logger.info("posTaggings:" + str(wordsList))
+            result = []
+            postag_result = self.postag_method.posTagging_text(wordsList)
+            for i in range(len(wordsList)):
+                temp = []
+                count = 0
+                for word in wordsList[i]:
+                    posResult = PosResult(word, postag_result[i][count])
+                    temp.append(posResult)
+                    count += 1
+                result.append(temp)
+            return result
+        except Exception as e:
+            logger.error('%s' % e.message)
 
     def segmentWithPosTagging(self, input):
         try:
             logger.info("segmentWithPosTagging:" + input)
             result = []
-            segment_result = self.segment_method.generate_char_result(input)
+            segment_result = self.segment_method.generate_final_result(input)
             postag_result = self.postag_method.posTagging_text(segment_result)
             count = 0
-            for word in segment_result:
-                posResult = PosResult(word, postag_result[count])
+            for word in segment_result[0]:
+                posResult = PosResult(word, postag_result[0][count])
                 result.append(posResult)
                 count += 1
             return result
@@ -85,7 +104,22 @@ class WordSegmentServiceHandler:
 
     def segmentWithPosTaggings(self, inputs):
         # inputs is a list of string
-        pass
+        try:
+            logger.info("segmentWithPosTagging:" + input)
+            result = []
+            segment_result = self.segment_method.generate_final_result(input)
+            postag_result = self.postag_method.posTagging_text(segment_result)
+            for i in range(len(segment_result)):
+                count = 0
+                temp = []
+                for word in segment_result[i]:
+                    posResult = PosResult(word, postag_result[i][count])
+                    temp.append(posResult)
+                    count += 1
+                result.append(temp)
+            return result
+        except Exception as e:
+            logger.error('%s' % e.message)
 
 if __name__ == '__main__':
     handler = WordSegmentServiceHandler(segment_model_path=sys.argv[2], pos_tag_model_path=sys.argv[3])
