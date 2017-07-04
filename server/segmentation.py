@@ -44,8 +44,7 @@ class segmentation:
         char_list = np.zeros([num_text, self.max_sentence_len], dtype = int)
 
         for i in range(len(text)):
-            text[i] = text[i].replace(" ","")
-            temp_text = text[i].decode("utf-8")
+            temp_text = text[i].decode("utf-8").replace(" ","")
             if len(temp_text) > 80:
                 temp_text = temp_text[:80]
             count = 0
