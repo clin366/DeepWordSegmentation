@@ -117,27 +117,9 @@ class posTag:
     # Define the function to do the posTagging work for the single text, return the tag sequence
     def posTagging_single_text(self, text):
         text = [text]
-        twX, tcX = self.generate_text_array(text)
-        pos_result = generate_result(self.sess, self.batch_size, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp_w, self.model.inp_c, twX, tcX)
-        
-        result = []
-        for i in range(len(pos_result)):
-            temp = pos_result[i][:]
-            for j in range(len(temp)):
-                temp[j] = self.tag_dict[temp[j]]
-            result.append(temp)
-        
-        posTag_result = []
-        for i in range(len(result)):
-            count = 0
-            temp = []
-            for word in text[i]:
-                posResult = PosResult(word, result[i][count])
-                count += 1
-                temp.append(posResult)
-            posTag_result.append(temp)
+        posTag_result = self.posTagging_text(text)
          
-        return posTag_result
+        return posTag_result[0]
     
     # Define the function to do the posTagging work after segmentation, return the tag sequence
     def segment_posTagging_text(self, text):

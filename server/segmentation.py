@@ -49,13 +49,12 @@ class segmentation:
                 temp_text = temp_text[:80]
             count = 0
             for char in temp_text:
-                if char != " ":
-                    if char.encode('utf-8') in self.vec_dict:
-                        char_list[i][count] = self.getIndex(char.encode('utf-8'))
-                        count += 1
-                    else:
-                        char_list[i][count] = self.getIndex("<UNK>")
-                        count += 1
+                if char.encode('utf-8') in self.vec_dict:
+                    char_list[i][count] = self.getIndex(char.encode('utf-8'))
+                    count += 1
+                else:
+                    char_list[i][count] = self.getIndex("<UNK>")
+                    count += 1
 
         return char_list
 
@@ -106,14 +105,10 @@ class segmentation:
 
     def generate_final_result_single_text(self, text):
         text = [text]
-        result = self.segment_text_without_filter(text)
-        num_text = len(result)
-        final_result = []
+        final_result = self.generate_final_result(text)
 
-        for i in range(num_text):
-            final_result.append(self.generate_char_result(text[i], result[i]))
+        return final_result[0]
 
-        return final_result
     def generate_final_result(self, text):
         new_text = []
         for i in range(len(text)):
