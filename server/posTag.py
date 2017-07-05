@@ -90,6 +90,13 @@ class posTag:
 
         return word_list, char_list
 
+    # Define the function to justify the combination of the string
+    def justify_combination(self, word):
+        if len(word) == len(word.decode("utf-8")):
+           return False
+        else:
+           return True
+
     # Define the function to do the posTagging work, return the tag sequence
     def posTagging_text(self, text):
         twX, tcX = self.generate_text_array(text)
@@ -99,7 +106,10 @@ class posTag:
         for i in range(len(pos_result)):
             temp = pos_result[i][:]
             for j in range(len(temp)):
-                temp[j] = self.tag_dict[temp[j]]
+                if self.tag_dict[temp[j]] == "x" and self.justify_combination(text[i][j]):
+                   temp[j] == "nz"
+                else:
+                   temp[j] = self.tag_dict[temp[j]]
             result.append(temp)
         
         posTag_result = []
@@ -144,7 +154,10 @@ class posTag:
         for i in range(len(pos_result)):
             temp = pos_result[i][:]
             for j in range(len(temp)):
-                temp[j] = self.tag_dict[temp[j]]
+                if self.tag_dict[temp[j]] == "x" and self.justify_combination(text[i][j]):
+                   temp[j] == "nz"
+                else:
+                   temp[j] = self.tag_dict[temp[j]]
             result.append(temp)
         
         posTag_result = []
