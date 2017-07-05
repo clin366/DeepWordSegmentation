@@ -121,6 +121,13 @@ class posTag:
          
         return posTag_result[0]
     
+    # Define the function to do the posTagging work after segmentation for a single text
+    def segment_posTagging_single_text(self, text):
+        text = [text]
+        posTag_result = self.segment_posTagging_text(text)
+        
+        return posTag_result[0]
+    
     # Define the function to do the posTagging work after segmentation, return the tag sequence
     def segment_posTagging_text(self, text):
         new_text = []

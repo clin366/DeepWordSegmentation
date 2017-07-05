@@ -76,7 +76,7 @@ class WordSegmentServiceHandler:
         try:
             logger.info("segmentWithPosTagging:" + input)
             segment_result = self.segment_method.generate_final_result_single_text(input)
-            postag_result = self.postag_method.segment_posTagging_text(segment_result)
+            postag_result = self.postag_method.segment_posTagging_single_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
