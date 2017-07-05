@@ -84,8 +84,8 @@ class WordSegmentServiceHandler:
     def segmentWithPosTaggings(self, inputs):
         # inputs is a list of string
         try:
-            logger.info("segmentWithPosTagging error")
-            segment_result = self.segment_method.generate_final_result(input)
+            logger.info("segmentWithPosTaggings error")
+            segment_result = self.segment_method.generate_final_result(inputs)
             postag_result = self.postag_method.segment_posTagging_text(segment_result)
             return postag_result
         except Exception as e:

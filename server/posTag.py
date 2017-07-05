@@ -5,6 +5,7 @@
 # @Last Modified time: 2017-06-23 17:40:47
 import sys
 import os
+import re
 import numpy as np
 import tensorflow as tf
 from generate_file_pos import *
@@ -92,7 +93,7 @@ class posTag:
 
     # Define the function to justify the combination of the string
     def justify_combination(self, word):
-        if len(word) == len(word.decode("utf-8")):
+        if len(word) == len(re.sub("[^a-zA-Z]", "", word)):
            return False
         else:
            return True
