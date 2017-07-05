@@ -146,28 +146,5 @@ class posTag:
             for j in range(len(text[i])):
                 temp.append(text[i][j].decode('utf-8'))
             new_text.append(temp)
-            
-        twX, tcX = self.generate_text_array(new_text)
-        pos_result = generate_result(self.sess, self.batch_size, self.text_unary_score, self.text_sequence_length, self.crf_transition_matrix, self.model.inp_w, self.model.inp_c, twX, tcX)
-        
-        result = []
-        for i in range(len(pos_result)):
-            temp = pos_result[i][:]
-            for j in range(len(temp)):
-                if self.tag_dict[temp[j]] == "x" and self.justify_combination(text[i][j]):
-                   temp[j] == "nz"
-                else:
-                   temp[j] = self.tag_dict[temp[j]]
-            result.append(temp)
-        
-        posTag_result = []
-        for i in range(len(result)):
-            count = 0
-            temp = []
-            for word in new_text[i]:
-                posResult = PosResult(word, result[i][count])
-                count += 1
-                temp.append(posResult)
-            posTag_result.append(temp)
-         
-        return posTag_result
+
+        return self.posTagging_text(new_text)
