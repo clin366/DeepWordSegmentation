@@ -108,7 +108,7 @@ class posTag:
             temp = pos_result[i][:]
             for j in range(len(temp)):
                 if self.tag_dict[temp[j]] == "x" and self.justify_combination(text[i][j]):
-                   temp[j] == "nz"
+                   temp[j] = "nz"
                 else:
                    temp[j] = self.tag_dict[temp[j]]
             result.append(temp)
