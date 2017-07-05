@@ -58,7 +58,7 @@ class WordSegmentServiceHandler:
     def posTagging(self, words):
         try:
             logger.info("posTagging:" + str(words))
-            postag_result = self.postag_method.posTagging_text(words)
+            postag_result = self.postag_method.posTagging_single_text(words)
             return postag_result[0]
         except Exception as e:
             logger.error('%s' % e.message)
