@@ -52,8 +52,9 @@ class posTag:
     def generate_char_array(self, word, index, char_list, text_index):
 
         for char in word:
-            if char.encode("utf-8") in self.char_vec_dict:
-                char_list[text_index][index] = self.getCharIndex(char.encode("utf-8"))
+            char = char.encode("utf-8")
+            if char in self.char_vec_dict:
+                char_list[text_index][index] = self.getCharIndex(char)
                 index += 1
             else:
                 char_list[text_index][index] = self.getCharIndex("<UNK>")
@@ -78,13 +79,16 @@ class posTag:
                 text[i] = text[i][:self.max_sentence_len]
 
             for word in text[i]:
+                word = word.encode("utf-8")
                 if word in self.word_vec_dict:
                     word_list[i][word_index] = self.getWordIndex(word)
+                    word = word.decode("utf-8")
                     char_list = self.generate_char_array(word, char_index, char_list, i)
                     word_index += 1
                     char_index = self.max_chars_per_word * word_index
                 else:
                     word_list[i][word_index] = 1
+                    word = word.decode("utf-8")
                     char_list = self.generate_char_array(word, char_index, char_list, i)
                     word_index += 1
                     char_index = self.max_chars_per_word * word_index

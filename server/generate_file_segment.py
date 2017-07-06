@@ -53,6 +53,7 @@ def filter_symbol(char_list):
     symbol_chinese = "。。×-★！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏." 
 
     for word in char_list:
+        word = word.encode("utf-8")
         if word not in symbol_chinese and word not in string.punctuation:
             new_list.append(word)
 
