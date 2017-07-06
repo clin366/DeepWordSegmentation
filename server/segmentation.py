@@ -44,11 +44,10 @@ class segmentation:
         char_list = np.zeros([num_text, self.max_sentence_len], dtype = int)
 
         for i in range(len(text)):
-            temp_text = text[i].decode("utf-8")
             count = 0
             for char in temp_text:
-                if char.encode('utf-8') in self.vec_dict:
-                    char_list[i][count] = self.getIndex(char.encode('utf-8'))
+                if char in self.vec_dict:
+                    char_list[i][count] = self.getIndex(char)
                     count += 1
                 else:
                     char_list[i][count] = self.getIndex("<UNK>")
@@ -67,32 +66,21 @@ class segmentation:
 
     # Define the function to return the char result
     def generate_char_result(self, text, result):
-
-        text = text.decode("utf-8")
         char_result = []
-
         assert len(text) == len(result)
 
+        char = ""
         for i in range(len(result)):
             if result[i] == 0:
-                char_result.append(text[i].encode('utf-8'))
+                char_result.append(text[i])
             elif result[i] == 1:
                 char = ""
-                char += text[i].encode('utf-8')
+                char += text[i]
             elif result[i] == 2:
-                try:
-                    char += text[i].encode('utf-8')
-                except:
-                    char = ""
-                    char += text[i].encode('utf-8')
+                char += text[i]
             else:
-                try:
-                    char += text[i].encode('utf-8')
-                    char_result.append(char)
-                except:
-                    char = ""
-                    char += text[i].encode('utf-8')
-                    char_result.append(char)
+                char += text[i]
+                char_result.append(char)
                     
         char_result = filter_symbol(char_result)
 
@@ -105,13 +93,10 @@ class segmentation:
         return final_result[0]
 
     def generate_final_result(self, text):
-        for i in range(len(text)):
-            if len(text[i]) > 80:
-                text[i] = text[i][:80]
 
         new_text = []
         for i in range(len(text)):
-            new_text.append(text[i].encode("utf-8").replace(" ",""))
+            new_text.append((text[i][:80]).replace(" ",""))
 
         result = self.segment_text_without_filter(new_text)
         num_text = len(result)
