@@ -12,6 +12,7 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
+import traceback
 import loggingUtils
 
 from segmentation import *
@@ -45,15 +46,17 @@ class WordSegmentServiceHandler:
             return result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
     def segmentTexts(self, inputs):
         # inputs is a list of string
         try:
-            logger.info("segmentTexts error")
+            logger.info("segmentTexts:" + inputs[0])
             result = self.segment_method.generate_final_result(inputs)
             return result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
     def posTagging(self, words):
         try:
@@ -62,15 +65,17 @@ class WordSegmentServiceHandler:
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
     def posTaggings(self, wordsList):
         # wordsList is a list of list of string
         try:
-            logger.info("posTaggings error")
+            logger.info("posTaggings:" + str(wordsList[0]))
             postag_result = self.postag_method.posTagging_text(wordsList)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
     def segmentWithPosTagging(self, input):
         try:
@@ -80,18 +85,21 @@ class WordSegmentServiceHandler:
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
     def segmentWithPosTaggings(self, inputs):
         # inputs is a list of string
         try:
-            logger.info("segmentWithPosTaggings error")
+            logger.info("segmentWithPosTaggings:" + inputs[0])
             segment_result = self.segment_method.generate_final_result(inputs)
             postag_result = self.postag_method.segment_posTagging_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
+            logger.error(traceback.format_exc())
 
 if __name__ == '__main__':
+    logger.info('Thrift init started')
     handler = WordSegmentServiceHandler(segment_model_path=sys.argv[2], pos_tag_model_path=sys.argv[3])
     processor = WordSegmentService.Processor(handler)
     transport = TSocket.TServerSocket(port=sys.argv[1])
@@ -104,11 +112,13 @@ if __name__ == '__main__':
     # server = TServer.TThreadedServer(
     #     processor, transport, tfactory, pfactory)
     server = TServer.TThreadPoolServer(processor, transport, tfactory, pfactory)
-    server.setNumThreads(20)
+    server.setNumThreads(32)
 
+    logger.info('Thrift init finished')
     logger.info('Starting the server...')
     try:
         server.serve()
     except Exception as e:
         logger.error('%s' % e.message)
+        logger.error(traceback.format_exc())
     logger.info('done.')
