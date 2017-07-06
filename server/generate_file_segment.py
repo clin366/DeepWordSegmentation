@@ -58,33 +58,6 @@ def filter_symbol(char_list):
 
     return new_list
 
-# Define the function to filter the symbol    
-def generate_result_without_symbol(sequence, text):
-
-    text = text.decode("UTF-8")
-    char = []
-
-    for word in text:
-        if word != "<" and word != ">" and word != " " and word != "\n" and word != "\r":
-                char.append(word.encode('UTF-8'))
-
-    symbol_chinese = "。。×-★！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏."          
-    new_sequence = []
-
-    for i in range(len(char)):
-        assert len(char) == len(sequence)
-
-        if char[i] in symbol_chinese or char[i] in string.punctuation:
-            sequence[i] = "P"
-
-    for i in range(len(char)):
-        if sequence[i] == "P":
-            continue
-        else:
-            new_sequence.append(int(sequence[i]))
-
-    return new_sequence
-
 # Define the function to evaluate the text
 def generate_result(sess, unary_score, test_sequence_length, transMatrix, inp, tX):
 
