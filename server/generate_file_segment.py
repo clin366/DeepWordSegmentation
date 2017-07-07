@@ -46,19 +46,6 @@ def read_parameter(path):
     parameter_file.close()
     return parameter
 
-# Define the function to filter the symbol in char result
-def filter_symbol(char_list):
-
-    new_list = []
-    symbol_chinese = "。。×-★！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏." 
-
-    for word in char_list:
-        word = word.encode("utf-8")
-        if word not in symbol_chinese and word not in string.punctuation:
-            new_list.append(word)
-
-    return new_list
-
 # Define the function to evaluate the text
 def generate_result(sess, unary_score, test_sequence_length, transMatrix, inp, tX):
 

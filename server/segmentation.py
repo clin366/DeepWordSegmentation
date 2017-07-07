@@ -82,8 +82,6 @@ class segmentation:
             else:
                 char += text[i]
                 char_result.append(char)
-                    
-        char_result = filter_symbol(char_result)
 
         return char_result
 
