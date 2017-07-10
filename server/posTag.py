@@ -141,4 +141,4 @@ class posTag:
     
     # Define the function to do the posTagging work after segmentation, return the tag sequence
     def segment_posTagging_text(self, text):
-        return self.posTagging_text(new_text)
+        return self.posTagging_text(text)
