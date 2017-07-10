@@ -46,7 +46,6 @@ class segmentation:
         for i in range(len(text)):
             count = 0
             for char in text[i]:
-                char = char.encode("utf-8")
                 if char in self.vec_dict:
                     char_list[i][count] = self.getIndex(char)
                     count += 1

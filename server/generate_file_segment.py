@@ -22,7 +22,7 @@ def generate_vec_dict(path):
       break
 
     line = line.split(" ")
-    vec_dict[line[0]] = index - 1
+    vec_dict[line[0].decode("utf-8")] = index - 1
     index += 1
 
   vec_result.close()

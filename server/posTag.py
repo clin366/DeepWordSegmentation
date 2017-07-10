@@ -52,7 +52,6 @@ class posTag:
     def generate_char_array(self, word, index, char_list, text_index):
 
         for char in word:
-            char = char.encode("utf-8")
             if char in self.char_vec_dict:
                 char_list[text_index][index] = self.getCharIndex(char)
                 index += 1
@@ -79,9 +78,8 @@ class posTag:
                 text[i] = text[i][:self.max_sentence_len]
 
             for word in text[i]:
-                encodedWord = word.encode("utf-8")
-                if encodedWord in self.word_vec_dict:
-                    word_list[i][word_index] = self.getWordIndex(encodedWord)
+                if word in self.word_vec_dict:
+                    word_list[i][word_index] = self.getWordIndex(word)
                     char_list = self.generate_char_array(word, char_index, char_list, i)
                     word_index += 1
                     char_index = self.max_chars_per_word * word_index
@@ -143,11 +141,4 @@ class posTag:
     
     # Define the function to do the posTagging work after segmentation, return the tag sequence
     def segment_posTagging_text(self, text):
-        new_text = []
-        for i in range(len(text)):
-            temp = []
-            for j in range(len(text[i])):
-                temp.append(text[i][j].decode('utf-8'))
-            new_text.append(temp)
-
         return self.posTagging_text(new_text)
