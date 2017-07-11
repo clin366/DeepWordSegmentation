@@ -32,3 +32,24 @@ py_binary(
     data=['//utils:w2v.so'],
     imports=['../../utils']
 )
+
+py_binary(
+    name = "generate_training_VideoTitle",
+    srcs = ["generate_training_VideoTitle.py"],
+    data = ["//utils:w2v.so"],
+    imports = ["../../utils"],
+)
+
+py_binary(
+    name = "generate_training_ICWB",
+    srcs = ["generate_training_ICWB.py"],
+    data = ["//utils:w2v.so"],
+    imports = ["../../utils"],
+)
+
+py_binary(
+    name = "generate_pos_VideoTitle_test",
+    srcs = ["generate_pos_VideoTitle_test.py"],
+    data = ["//utils:w2v.so"],
+    imports = ["../../utils"],
+)
