@@ -69,8 +69,11 @@ def generate_result(sess, unary_score, test_sequence_length, transMatrix, inp, t
             tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
             
             # viterbi解码
-            viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
-            result.append(viterbi_sequence)
+            if len(tf_unary_scores_) == 0:
+               result.append([])
+            else:   
+               viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
+               result.append(viterbi_sequence)
 
     return result
     

@@ -80,7 +80,10 @@ def generate_result(sess, batchSize, unary_score, test_sequence_length, transMat
 
         for tf_unary_scores_, sequence_length_ in zip(unary_score_val, test_sequence_length_val):
             tf_unary_scores_ = tf_unary_scores_[:sequence_length_]
-            viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
-            result.append(viterbi_sequence)
+            if len(tf_unary_scores_) == 0:
+               result.append([])
+            else:   
+               viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(tf_unary_scores_, transMatrix)
+               result.append(viterbi_sequence)
 
     return result
