@@ -84,7 +84,7 @@ class WordSegmentServiceHandler:
         try:
             if len(wordsList) == 0:
                 return []
-            logger.info("posTaggings:" + wordsList[0][0])
+            logger.info("posTaggings:" + str(wordsList[0]))
             postag_result = self.postag_method.posTagging_text(wordsList)
             return postag_result
         except Exception as e:
