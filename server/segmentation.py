@@ -74,13 +74,16 @@ class segmentation:
             if result[i] == 0:
                 char_result.append(text[i])
             elif result[i] == 1:
-                char = ""
                 char += text[i]
             elif result[i] == 2:
                 char += text[i]
             else:
                 char += text[i]
                 char_result.append(char)
+                char = ""
+
+        if char != "":
+           char_result.append(char)
 
         return char_result
 
