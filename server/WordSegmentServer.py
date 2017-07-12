@@ -60,7 +60,7 @@ class WordSegmentServiceHandler:
         # inputs is a list of string
         try:
             if len(inputs) == 0:
-               return [[]]
+               return []
             logger.info("segmentTexts:" + inputs[0])
             result = self.segment_method.generate_final_result(inputs)
             return result
@@ -83,7 +83,7 @@ class WordSegmentServiceHandler:
         # wordsList is a list of list of string
         try:
             if len(wordsList) == 0:
-                return [[]]
+                return []
             logger.info("posTaggings:" + wordsList[0][0])
             postag_result = self.postag_method.posTagging_text(wordsList)
             return postag_result
@@ -97,7 +97,7 @@ class WordSegmentServiceHandler:
                 return []
             logger.info("segmentWithPosTagging:" + input)
             segment_result = self.segment_method.generate_final_result_single_text(input)
-            postag_result = self.postag_method.segment_posTagging_single_text(segment_result)
+            postag_result = self.postag_method.posTagging_single_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
@@ -107,10 +107,10 @@ class WordSegmentServiceHandler:
         # inputs is a list of string
         try:
             if len(inputs) == 0:
-                return [[]]
+                return []
             logger.info("segmentWithPosTaggings:" + inputs[0])
             segment_result = self.segment_method.generate_final_result(inputs)
-            postag_result = self.postag_method.segment_posTagging_text(segment_result)
+            postag_result = self.postag_method.posTagging_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
