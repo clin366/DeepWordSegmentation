@@ -51,7 +51,8 @@ class posTag:
     # Define the function to help generate the char array 
     def generate_char_array(self, word, index, char_list, text_index):
 
-        for char in word:
+        limit_length_word = word[:self.max_chars_per_word]
+        for char in limit_length_word:
             if char in self.char_vec_dict:
                 char_list[text_index][index] = self.getCharIndex(char)
                 index += 1
@@ -131,14 +132,3 @@ class posTag:
         posTag_result = self.posTagging_text(text)
          
         return posTag_result[0]
-    
-    # Define the function to do the posTagging work after segmentation for a single text
-    def segment_posTagging_single_text(self, text):
-        text = [text]
-        posTag_result = self.segment_posTagging_text(text)
-        
-        return posTag_result[0]
-    
-    # Define the function to do the posTagging work after segmentation, return the tag sequence
-    def segment_posTagging_text(self, text):
-        return self.posTagging_text(text)

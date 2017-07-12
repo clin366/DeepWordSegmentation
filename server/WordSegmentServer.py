@@ -47,6 +47,8 @@ class WordSegmentServiceHandler:
 
     def segmentText(self, input):
         try:
+            if len(input) == 0:
+               return []
             logger.info("segmentText:" + input)
             result = self.segment_method.generate_final_result_single_text(input)
             return result
@@ -57,6 +59,8 @@ class WordSegmentServiceHandler:
     def segmentTexts(self, inputs):
         # inputs is a list of string
         try:
+            if len(inputs) == 0:
+               return []
             logger.info("segmentTexts:" + inputs[0])
             result = self.segment_method.generate_final_result(inputs)
             return result
@@ -66,6 +70,8 @@ class WordSegmentServiceHandler:
 
     def posTagging(self, words):
         try:
+            if len(words) == 0:
+                return []
             logger.info("posTagging:" + words[0])
             postag_result = self.postag_method.posTagging_single_text(words)
             return postag_result
@@ -76,6 +82,8 @@ class WordSegmentServiceHandler:
     def posTaggings(self, wordsList):
         # wordsList is a list of list of string
         try:
+            if len(wordsList) == 0:
+                return []
             logger.info("posTaggings:" + wordsList[0][0])
             postag_result = self.postag_method.posTagging_text(wordsList)
             return postag_result
@@ -85,9 +93,11 @@ class WordSegmentServiceHandler:
 
     def segmentWithPosTagging(self, input):
         try:
+            if len(input) == 0:
+                return []
             logger.info("segmentWithPosTagging:" + input)
             segment_result = self.segment_method.generate_final_result_single_text(input)
-            postag_result = self.postag_method.segment_posTagging_single_text(segment_result)
+            postag_result = self.postag_method.posTagging_single_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
@@ -96,9 +106,11 @@ class WordSegmentServiceHandler:
     def segmentWithPosTaggings(self, inputs):
         # inputs is a list of string
         try:
+            if len(inputs) == 0:
+                return []
             logger.info("segmentWithPosTaggings:" + inputs[0])
             segment_result = self.segment_method.generate_final_result(inputs)
-            postag_result = self.postag_method.segment_posTagging_text(segment_result)
+            postag_result = self.postag_method.posTagging_text(segment_result)
             return postag_result
         except Exception as e:
             logger.error('%s' % e.message)
