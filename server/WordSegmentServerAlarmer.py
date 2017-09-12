@@ -55,6 +55,7 @@ def OnTimer():
         try:
             lostClient.initConnect()
             lostClient.client.alive()
+            logger.info(str(lostClient.ip) + " " + str(lostClient.port) + " 服务恢复")
             sendEmail.send_mail(str(lostClient.ip) + " " + str(lostClient.port) + "分词服务上线", "哟哟，分词服务恢复了哟！")
             fixedClients.append(lostClient)
         except Thrift.TException as tx:
