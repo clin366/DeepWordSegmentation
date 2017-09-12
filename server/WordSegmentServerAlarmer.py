@@ -22,6 +22,7 @@ import sendEmail
 logger = loggingUtils.my_logging.get_my_log("./logs/WordSegmentServerAlarmer.log", 'WordSegmentServerAlarmer')
 
 thriftClients = []
+lostClients = []
 t = ""
 
 class ThriftClient():
@@ -38,15 +39,34 @@ class ThriftClient():
         protocol = TCompactProtocol.TCompactProtocol(self.transport)
         self.client = WordSegmentService.Client(protocol)
 
+    def close(self):
+        self.transport.close()
+
 def closeClients():
     global thriftClients
     for thriftClient in thriftClients:
-        thriftClient.transport.close()
+        thriftClient.close()
 
 def OnTimer():
     logger.info("OnTimer")
-    errorClients = []
+    global lostClients
+    fixedClients = []
+    for lostClient in lostClients:
+        try:
+            lostClient.initConnect()
+            lostClient.client.alive()
+            sendEmail.send_mail(str(lostClient.ip) + " " + str(lostClient.port) + "分词服务上线", "哟哟，分词服务恢复了哟！")
+            fixedClients.append(lostClient)
+        except Thrift.TException as tx:
+            logger.error('%s' % tx.message)
+            logger.error(str(lostClient.ip) + " " + str(lostClient.port) + " 服务未恢复")
+
     global thriftClients
+    for fixedClient in fixedClients:
+        thriftClients.append(fixedClient)
+        lostClients.remove(fixedClient)
+
+    errorClients = []
     for thriftClient in thriftClients:
         try:
             thriftClient.client.alive()
@@ -60,6 +80,7 @@ def OnTimer():
 
     for errorClient in errorClients:
         thriftClients.remove(errorClient)
+        lostClients.append(errorClient)
 
     global t
     t = threading.Timer(30.0, OnTimer)
