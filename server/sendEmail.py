@@ -22,7 +22,7 @@ def get_current_time():
 
 # 发送邮件
 def send_mail(sub,content):
-    to_list = ['zengxiangneng@firedata.cc', 'shihengkun@firedata.cc']
+    to_list = ['zengxiangneng@firedata.cc', 'shihengkun@firedata.cc', 'wangqi@firedata.cc']
     '''
     to_list:发给谁
     sub:主题
