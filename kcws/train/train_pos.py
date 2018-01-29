@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Koth
 # @Date:   2017-01-24 16:13:14
-# @Last Modified by:   Koth
-# @Last Modified time: 2017-04-07 23:02:50
+# @Last Modified by:   Yu Chen
+# @Last Modified time: 2017-06-02 17:02:50
 
 from __future__ import absolute_import
 from __future__ import division
@@ -12,6 +12,7 @@ import numpy as np
 
 import tensorflow as tf
 import os
+import time
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -25,18 +26,17 @@ tf.app.flags.DEFINE_string("char_word2vec_path", "pos/char_vec.txt",
                            "the charater word2vec data path")
 tf.app.flags.DEFINE_integer("max_sentence_len", 50,
                             "max num of tokens per query")
-tf.app.flags.DEFINE_integer("embedding_word_size", 150, "embedding size")
-tf.app.flags.DEFINE_integer("embedding_char_size", 50, "second embedding size")
+tf.app.flags.DEFINE_integer("embedding_word_size", 50, "embedding size")
+tf.app.flags.DEFINE_integer("embedding_char_size", 20, "second embedding size")
 tf.app.flags.DEFINE_integer("num_tags", 74, "num pos tags")
 tf.app.flags.DEFINE_integer("char_window_size", 2,
                             "the window size of char convolution")
 tf.app.flags.DEFINE_integer("max_chars_per_word", 5,
                             "max number of characters per word ")
-tf.app.flags.DEFINE_integer("num_hidden", 100, "hidden unit number")
+tf.app.flags.DEFINE_integer("num_hidden", 20, "hidden unit number")
 tf.app.flags.DEFINE_integer("batch_size", 64, "num example per mini batch")
-tf.app.flags.DEFINE_integer("train_steps", 50000, "trainning steps")
+tf.app.flags.DEFINE_integer("train_steps", 20000, "trainning steps")
 tf.app.flags.DEFINE_float("learning_rate", 0.001, "learning rate")
-
 
 def do_load_data(path):
     wx = []
@@ -148,15 +148,13 @@ class Model:
         reuse = None if trainMode else True
         with tf.variable_scope("rnn_fwbw", reuse=reuse) as scope:
             forward_output, _ = tf.nn.dynamic_rnn(
-                tf.contrib.rnn.LSTMCell(self.numHidden,
-                                        reuse=reuse),
+                tf.contrib.rnn.LSTMCell(self.numHidden),
                 word_vectors,
                 dtype=tf.float32,
                 sequence_length=length,
                 scope="RNN_forward")
             backward_output_, _ = tf.nn.dynamic_rnn(
-                tf.contrib.rnn.LSTMCell(self.numHidden,
-                                        reuse=reuse),
+                tf.contrib.rnn.LSTMCell(self.numHidden),
                 inputs=tf.reverse_sequence(word_vectors,
                                            length_64,
                                            seq_dim=1),
@@ -261,6 +259,9 @@ def test_evaluate(sess, unary_score, test_sequence_length, transMatrix, inp_w,
     numBatch = int((twX.shape[0] - 1) / batchSize) + 1
     correct_labels = 0
     total_labels = 0
+    start_time = time.time()
+    
+    
     for i in range(numBatch):
         endOff = (i + 1) * batchSize
         if endOff > totalLen:
@@ -280,9 +281,12 @@ def test_evaluate(sess, unary_score, test_sequence_length, transMatrix, inp_w,
             # Evaluate word-level accuracy.
             correct_labels += np.sum(np.equal(viterbi_sequence, y_))
             total_labels += sequence_length_
+
+    end_time = time.time()
     accuracy = 100.0 * correct_labels / float(total_labels)
     print("Accuracy: %.3f%%" % accuracy)
-
+    print ("The cost of time is : " + str(end_time - start_time) + " s ")
+    print ("The total_labels is " + str(total_labels))
 
 def inputs(path):
     whole = read_csv(FLAGS.batch_size, path)
@@ -323,11 +327,12 @@ def main(unused_argv):
                 try:
                     _, trainsMatrix = sess.run(
                         [train_op, model.transition_params])
+                    np.savetxt("crf_transition_matrix.txt", np.array(trainsMatrix))
                     # for debugging and learning purposes, see how the loss gets decremented thru training steps
                     if (step + 1) % 100 == 0:
                         print("[%d] loss: [%r]" %
                               (step + 1, sess.run(total_loss)))
-                    if (step + 1) % 1000 == 0:
+                    if (step + 1) % 500 == 0:
                         test_evaluate(sess, test_unary_score,
                                       test_sequence_length, trainsMatrix,
                                       model.inp_w, model.inp_c, twX, tcX, tY)
@@ -336,8 +341,7 @@ def main(unused_argv):
                                   FLAGS.log_dir + '/model',
                                   global_step=(step + 1))
                     raise e
-            sv.saver.save(sess, FLAGS.log_dir + '/finnal-model')
-
+            sv.saver.save(sess, FLAGS.log_dir + '/PosTagModel')
 
 if __name__ == '__main__':
     tf.app.run()
