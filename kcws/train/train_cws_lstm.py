@@ -71,7 +71,7 @@ class Model:
         self.distinctTagNum = distinctTagNum
         self.numHidden = numHidden
         
-        self.c2v = self.load_w2v(c2vPath, 50)
+        self.c2v = self.load_w2v(c2vPath, FLAGS.embedding_size)
         self.words = tf.Variable(self.c2v, name = "words")
         
         if FLAGS.embedding_size_2 > 0:

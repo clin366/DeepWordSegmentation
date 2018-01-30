@@ -35,7 +35,7 @@ tf.app.flags.DEFINE_integer("max_chars_per_word", 5,
                             "max number of characters per word ")
 tf.app.flags.DEFINE_integer("num_hidden", 20, "hidden unit number")
 tf.app.flags.DEFINE_integer("batch_size", 64, "num example per mini batch")
-tf.app.flags.DEFINE_integer("train_steps", 20000, "trainning steps")
+tf.app.flags.DEFINE_integer("train_steps", 45000, "trainning steps")
 tf.app.flags.DEFINE_float("learning_rate", 0.001, "learning rate")
 
 def do_load_data(path):
