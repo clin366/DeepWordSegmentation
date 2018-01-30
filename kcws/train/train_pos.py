@@ -27,7 +27,7 @@ tf.app.flags.DEFINE_string("char_word2vec_path", "pos/char_vec.txt",
 tf.app.flags.DEFINE_integer("max_sentence_len", 50,
                             "max num of tokens per query")
 tf.app.flags.DEFINE_integer("embedding_word_size", 50, "embedding size")
-tf.app.flags.DEFINE_integer("embedding_char_size", 20, "second embedding size")
+tf.app.flags.DEFINE_integer("embedding_char_size", 50, "second embedding size")
 tf.app.flags.DEFINE_integer("num_tags", 74, "num pos tags")
 tf.app.flags.DEFINE_integer("char_window_size", 2,
                             "the window size of char convolution")
