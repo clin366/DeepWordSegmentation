@@ -25,7 +25,7 @@ tf.app.flags.DEFINE_integer('embedding_size_2', 0, 'second embedding size')
 tf.app.flags.DEFINE_integer('num_tags', 4, 'BMES')
 tf.app.flags.DEFINE_integer('num_hidden', 100, 'hidden unit number')
 tf.app.flags.DEFINE_integer('batch_size', 100, 'num example per mini batch')
-tf.app.flags.DEFINE_integer('train_steps', 20000, 'trainning steps')
+tf.app.flags.DEFINE_integer('train_steps', 45000, 'trainning steps')
 
 tf.app.flags.DEFINE_float('learning_rate', 0.001, 'learning rate')
 
