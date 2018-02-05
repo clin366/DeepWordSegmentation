@@ -29,7 +29,7 @@ class SegmentModel:
         
         self_trains_params = None
         self.inp = tf.placeholder(tf.int32, shape = [None, self.max_sentence_len], name = "input_placeholder")
-        self.loss(np.zeros([1,80], dtype = int), np.zeros([1,80], dtype = int))
+        self.loss(tf.zeros(shape=[1,80]), tf.zeros(shape=[1,80]))
         
     def length(self, data):
         
