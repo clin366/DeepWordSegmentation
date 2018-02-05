@@ -49,7 +49,7 @@ class PosTagModel:
             shape = [None, self.max_sentence_len * self.max_chars_per_word],
             name = "input_chars")
 
-        self.loss(np.zeros([1,self.max_sentence_len], dtype = int), np.zeros([1,self.max_sentence_len * self.max_chars_per_word], dtype = int), np.zeros([1,self.max_sentence_len], dtype = int))
+        self.loss(tf.zeros(shape = [1,self.max_sentence_len], dtype = int32), tf.zeros(shape = [1,self.max_sentence_len * self.max_chars_per_word], dtype = int32), tf.zeros(shape = [1,self.max_sentence_len], dtype = int32))
 
     def length(self, data):
         used = tf.sign(tf.abs(data))
