@@ -139,7 +139,7 @@ public class WordSegmentServer implements WordSegmentService.Iface {
 
     public static void main(String[] args) {
         Options options = new Options();
-        options.addOption("h",false,"list help");
+        options.addOption("h", "help", false,"list help");
         options.addRequiredOption("p","port", true, "server port");
         options.addRequiredOption("s","size", true, "backend client size");
         options.addRequiredOption("c", "client", true, "backend client connect info");
